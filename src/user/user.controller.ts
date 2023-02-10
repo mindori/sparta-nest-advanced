@@ -12,6 +12,6 @@ export class UserController {
 
   @Post("/signup")
   createUser() {
-    this.userService.createUser("test", "test");
+    this.userService.createUser("test", "test", "test");
   }
 }

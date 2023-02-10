@@ -17,7 +17,7 @@ export class BoardService {
   async getArticles() {
     return await this.articleRepository.find({
       where: { deletedAt: null },
-      select: ["author", "title", "content", "updatedAt"],
+      select: ["author", "title", "updatedAt"],
     });
   }
 
@@ -58,7 +58,7 @@ export class BoardService {
     // 아래의 코드는 getArticleById와 거의 흡사하지만 password를 추가로 인출하는 것이 차이입니다.
     const article = await this.articleRepository.findOne({
       where: { id, deletedAt: null },
-      select: ["author", "title", "content", "password", "updatedAt"],
+      select: ["password"],
     });
     if (_.isNil(article)) {
       throw new NotFoundException(`Article not found. id: ${id}`);

@@ -4,7 +4,6 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { BoardModule } from "./board/board.module";
 import { TypeOrmConfigService } from "./config/typeorm.config.service";
-import { UserService } from "./user/user.service";
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -19,12 +18,6 @@ import { Article } from "./board/article.entity";
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useClass: TypeOrmConfigService,
-      inject: [ConfigService],
-    }),
-    TypeOrmModule.forFeature([User, Article]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useClass: JwtConfigService,
       inject: [ConfigService],
     }),
     BoardModule,

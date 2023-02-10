@@ -7,10 +7,6 @@ import { TypeOrmConfigService } from "./config/typeorm.config.service";
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { JwtModule } from "@nestjs/jwt";
-import { JwtConfigService } from "./config/jwt.config.service";
-import { User } from "./user/user.entity";
-import { Article } from "./board/article.entity";
 
 @Module({
   imports: [

@@ -7,11 +7,11 @@ export class UserController {
 
   @Get("/login")
   async login() {
-    return await this.userService.login("test", "test");
+    return await this.userService.login("test3", "test3");
   }
 
   @Post("/signup")
-  createUser() {
-    this.userService.createUser("test", "test", "test");
+  async createUser() {
+    return await this.userService.createUser("test3", "test3", "test3");
   }
 }

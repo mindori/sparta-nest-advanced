@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -16,19 +17,19 @@ export class UserService {
     private jwtService: JwtService
   ) {}
 
-  async login(name: string, password: string) {
+  async login(userId: string, password: string) {
     const user = await this.userRepository.findOne({
-      where: { name, deletedAt: null },
+      where: { userId, deletedAt: null },
       select: ["id", "password"],
     });
 
     if (_.isNil(user)) {
-      throw new NotFoundException(`User not found. name: ${name}`);
+      throw new NotFoundException(`User not found. userId: ${userId}`);
     }
 
     if (user.password !== password) {
       throw new UnauthorizedException(
-        `User password is not correct. name: ${name}`
+        `User password is not correct. userId: ${userId}`
       );
     }
 
@@ -37,21 +38,30 @@ export class UserService {
     return accessToken;
   }
 
-  createUser(userId: string, name: string, password: string) {
-    this.userRepository.insert({
+  async createUser(userId: string, name: string, password: string) {
+    const existUser = await this.getUserInfo(userId);
+    if (!_.isNil(existUser)) {
+      throw new ConflictException(`User already exists. userId: ${userId}`);
+    }
+
+    const insertResult = await this.userRepository.insert({
       userId,
       name,
       password,
     });
+
+    const payload = { id: insertResult.identifiers[0].id };
+    const accessToken = await this.jwtService.signAsync(payload);
+    return accessToken;
   }
 
-  async updateUser(id: number, name: string, password: string) {
-    this.userRepository.update(id, { name, password });
+  async updateUser(userId: string, name: string, password: string) {
+    this.userRepository.update(userId, { name, password });
   }
 
-  async getUserInfo(id: number) {
+  async getUserInfo(userId: string) {
     return await this.userRepository.findOne({
-      where: { id, deletedAt: null },
+      where: { userId, deletedAt: null },
       select: ["name"], // 이외에도 다른 정보들이 필요하면 리턴해주면 됩니다.
     });
   }

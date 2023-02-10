@@ -11,12 +11,12 @@ import { UserController } from "./user.controller";
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useClass: JwtConfigService,
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User]),
   ],
   providers: [UserService],
   exports: [UserService],

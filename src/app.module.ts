@@ -1,12 +1,19 @@
-import { Module } from "@nestjs/common";
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { BoardModule } from "./board/board.module";
 import { TypeOrmConfigService } from "./config/typeorm.config.service";
-import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./user/user.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { JwtModule } from "@nestjs/jwt";
+import { JwtConfigService } from "./config/jwt.config.service";
+import { AuthMiddleware } from "./auth/auth.middleware";
 
 @Module({
   imports: [
@@ -16,11 +23,21 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
       useClass: TypeOrmConfigService,
       inject: [ConfigService],
     }),
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useClass: JwtConfigService,
+      inject: [ConfigService],
+    }),
     BoardModule,
-    AuthModule,
     UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AuthMiddleware],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes({ path: "user/update", method: RequestMethod.PUT });
+  }
+}

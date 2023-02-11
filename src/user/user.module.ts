@@ -1,10 +1,8 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { JwtModule, JwtService } from "@nestjs/jwt";
+import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Article } from "src/board/article.entity";
 import { JwtConfigService } from "src/config/jwt.config.service";
-import { Repository } from "typeorm";
 import { User } from "./user.entity";
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";

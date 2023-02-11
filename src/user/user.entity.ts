@@ -14,7 +14,7 @@ export class User {
   id: number;
 
   @Index({ unique: true })
-  @Column()
+  @Column("varchar", { length: 10 })
   userId: string;
 
   @Column("varchar", { length: 10 })

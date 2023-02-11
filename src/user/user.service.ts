@@ -55,8 +55,8 @@ export class UserService {
     return accessToken;
   }
 
-  async updateUser(userId: string, name: string, password: string) {
-    this.userRepository.update(userId, { name, password });
+  updateUser(userId: string, name: string, password: string) {
+    this.userRepository.update({ userId }, { name, password });
   }
 
   async getUserInfo(userId: string) {

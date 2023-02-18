@@ -1,24 +1,33 @@
 import {
+  CACHE_MANAGER,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
 import _ from "lodash";
-import { Repository } from "typeorm";
-import { Article } from "./article.entity";
+import { Cache } from "cache-manager";
+import { ArticleRepository } from "./article.repository";
 
 @Injectable()
 export class BoardService {
   constructor(
-    @InjectRepository(Article) private articleRepository: Repository<Article>
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    private articleRepository: ArticleRepository
   ) {}
 
   async getArticles() {
-    return await this.articleRepository.find({
+    const cachedArticles = await this.cacheManager.get("articles");
+    if (!_.isNil(cachedArticles)) {
+      return cachedArticles;
+    }
+
+    const articles = await this.articleRepository.find({
       where: { deletedAt: null },
       select: ["author", "title", "updatedAt"],
     });
+    await this.cacheManager.set("articles", articles);
+    return articles;
   }
 
   async getArticleById(id: number) {
@@ -26,6 +35,10 @@ export class BoardService {
       where: { id, deletedAt: null },
       select: ["author", "title", "content", "updatedAt"],
     });
+  }
+
+  async getHotArticles() {
+    return await this.articleRepository.getArticlesByViewCount(); // 일반 리포지토리엔 없는 커스텀 리포지터리에만 있는 함수!
   }
 
   createArticle(title: string, content: string, password: number) {

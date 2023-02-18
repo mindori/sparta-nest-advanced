@@ -7,6 +7,7 @@ import {
   Post,
   Put,
 } from "@nestjs/common";
+import { SkipThrottle, Throttle } from "@nestjs/throttler";
 import { BoardService } from "./board.service";
 import { CreateArticleDto } from "./dto/create-article.dto";
 import { DeleteArticleDto } from "./dto/delete-article.dto";
@@ -16,14 +17,21 @@ import { UpdateArticleDto } from "./dto/update-article.dto";
 export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
+  @SkipThrottle()
   @Get("/articles")
   async getArticles() {
     return await this.boardService.getArticles();
   }
 
+  @Throttle(5, 60)
   @Get("/articles/:id")
   async getArticleById(@Param("id") articleId: number) {
     return await this.boardService.getArticleById(articleId);
+  }
+
+  @Get("/hot-articles")
+  async getHotArticles() {
+    return await this.boardService.getHotArticles();
   }
 
   @Post("/articles")

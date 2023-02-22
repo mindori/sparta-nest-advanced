@@ -10,9 +10,9 @@ export class ArticleRepository extends Repository<Article> {
 
   async getArticlesByViewCount() {
     const result = await this.createQueryBuilder()
-      .select("article")
-      .from(Article, "article")
-      .orderBy("article.view", "DESC")
+      .select("articles")
+      .from(Article, "articles")
+      .orderBy("articles.view", "DESC")
       .getMany();
     return result;
   }
